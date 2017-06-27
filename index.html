@@ -5,41 +5,61 @@
     <title></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css" integrity="sha384-dNpIIXE8U05kAbPhy3G1cz+yZmTzA6CY8Vg/u2L9xRnHjJiAK76m2BIEaSEV+/aU"
+        crossorigin="anonymous">
+    <link href="styles/style.css" rel="stylesheet">
 </head>
 
 <body>
-    <div class="wrapper">
+    <div id="wrapper">
         <header>
-            <h1>My Twitch tv Tracker</h1>
+            <h1>My Twitch Tv Tracker</h1>
         </header>
-        <div>
-            <ul>
-                <li>All</li>
-                <li>Online</li>
-                <li>Offline</li>
-                <li>Add Channel</li>
-            </ul>
-        </div>
+        <div id="contents">
 
-        <form>
-            <!--<button type="submit">Add Streamer</button>-->
-            <i>Search Icon</i>
-            <input type="search" placeholder="Search">
-        </form>
+            <div class="tabs">
+                <ul>
+                    <li class="active">All</li>
+                    <li>Online</li>
+                    <li>Offline</li>
+                    <li>Add Channel</li>
+                </ul>
+            </div>
 
-        <section class="streamers-container">
-            <div class="streamer">
-                <div class="streamer-img"><img src="#" alt="streamer's Image"></div>
-                <div class="streamer-info">
-                    <h4>Name</h4>
-                    <p>Now Playing: <span>Call of Duty</span></p>
-                    <p>Followers: <span>1500</span></p>
-                    <p>Watching: <span>200</span></p>
+            <form>
+                <!--<button type="submit">Add Streamer</button>-->
+                <input type="search" placeholder="Search" id="search-bar">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </form>
+
+            <section class="streams-container">
+
+                <div class="stream">
+                    <div class="streamer-img">
+                        <img src="http://www.meposchools.org/wp-content/files/2013/07/placeholder.jpg" alt="streamer's Image">
+                    </div>
+                    <div class="stream-info">
+                        <h4>Name</h4>
+                        <p class="now-playing">Now Playing: <span>Call of Duty</span></p>
+                        <p class="followers">Followers: <span>1500</span></p>
+                        <p class="viewer-numbers">Watching: <span>200</span></p>
+                    </div>
                 </div>
 
-            </div>
-        </section>
+                 <div class="stream">
+                    <div class="streamer-img">
+                        <img src="http://www.meposchools.org/wp-content/files/2013/07/placeholder.jpg" alt="streamer's Image">
+                    </div>
+                    <div class="stream-info">
+                        <h4>Name</h4>
+                        <p class="now-playing">Now Playing: <span>Call of Duty</span></p>
+                        <p class="followers">Followers: <span>1500</span></p>
+                        <p class="viewer-numbers">Watching: <span>200</span></p>
+                    </div>
+                </div>
+
+            </section>
+        </div>
 
     </div>
 
@@ -49,7 +69,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
 
-    <script src="app.js"></script>
+    <script src="JS/app.js"></script>
 </body>
 
 </html>

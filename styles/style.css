@@ -1,0 +1,180 @@
+/* Basic reset */
+*, *::before, *::after {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background: -webkit-linear-gradient(top left, #FAD7A1 0%, #E96D71 100%) no-repeat center center fixed;
+    background: -moz-linear-gradient(top left, #FAD7A1 0%, #E96D71 100%) no-repeat center center fixed;
+    background: -o-linear-gradient(top left, #FAD7A1 0%, #E96D71 100%) no-repeat center center fixed;
+    background: linear-gradient(to bottom right, #FAD7A1 0%, #E96D71 100%) no-repeat center center fixed;
+    /*background-repeat: no-repeat;*/
+    background-size: cover;
+}
+
+#wrapper {
+    width: 50%;
+    margin: 0 auto;
+    height: 100%;
+    border: 2px solid red;
+}
+
+#contents {
+    color: #000;
+    background-color:#a4e0d4;
+}
+
+header>h1 {
+    text-align: center;
+    font-size: 35px;
+    margin-top: 20px;
+}
+
+
+/* made flex container */
+
+div.tabs ul {
+    display: flex;
+    display: -webkit-flex;
+    /*justify-content: space-around;*/
+    /*align-items: center;*/
+    margin-top: 20px;
+    height: 3em;
+}
+
+
+/* flex items */
+/* also flex container */
+.tabs li {
+    list-style: none;
+    font-size: 21px;
+    display: flex;
+    display: -webkit-flex;
+    /* allows items to strech evenly */
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    width: 100%;
+    align-self: stretch;
+    text-align: center;
+    border-right: 2px solid grey;
+    color:#fff;
+    background-color:#37a08b
+}
+
+li.active {
+    color: #000;
+    background-color:#a4e0d4;
+}
+
+/*
+Search styles
+*/
+form{
+    margin-top: 20px;
+    text-align: center;
+    width: 100%;
+}
+
+i.fa-search{
+    position: relative;
+    font-size: 14px;
+    right: 25px;
+}
+
+#search-bar{
+    padding: 5px 16px;
+    padding-left: 5px;
+    width: 50%;
+}
+
+/*
+Streamers
+*/
+section.streams-container{
+    width: 100%;
+    padding-bottom: 15px;
+    /*display: flex;*/
+    /*margin-top: 20px;*/
+}
+
+div.stream{
+    display: flex;
+    width: 97%;
+    margin: 0 auto;
+    height: 150px;
+    margin-top: 20px;
+
+    -webkit-box-shadow: 0px 3px 8px 0.2px rgba(0,0,0,0.52);
+    -moz-box-shadow: 0px 3px 8px 0.2px rgba(0,0,0,0.52);
+    box-shadow: 0px 3px 8px 0.2px rgba(0,0,0,0.52);
+    
+}
+
+div.stream:first-of-type{
+    margin-top: 50px;
+}
+
+/* selects all direct decendants of the element */
+.stream > * {
+    flex: 1;
+    background-color: #fefefe;
+    padding: 10px;
+}
+
+.streamer-img{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 10px solid rgba(0,0,0,0);
+    
+}
+
+.streamer-img img{
+    /*width: 60%;*/
+    height: 100%;
+    border-radius: 50%;
+}
+
+.stream-info{
+    flex: 1.8;
+    line-height: 24px;
+}
+.stream-info h4{
+    width: 100%;
+    text-align: center;
+    font-size: 30px;
+}
+
+.now-playing{
+    margin-top: 20px;
+}
+
+.now-playing, .followers, .viewer-numbers {
+    text-align: justify;
+    font-size: 18px;
+    letter-spacing: 1.3px;
+}
+
+
+
+
+
+@media screen and (max-width: 980px){
+
+    #wrapper {
+        width: 80%;
+    }
+
+}
+
+@media screen and (max-width: 580px){
+
+    #wrapper {
+        width: 100%;
+    }
+
+}
