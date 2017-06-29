@@ -38,7 +38,7 @@ function getStreamsInfo(streamInfo, template, i) {
   });
 }
 
-// displays basic info of streamer
+// displays basic info of streamer fron /channels request
 function printBaseChannelDetails(obj, i) {
   var HTMLTemplate = `<a data-count${i}="val" class="stream-link" href="${obj.url}" target="_blank">
                 <div class="stream">
@@ -80,15 +80,13 @@ function displayWhenStreaming(template, obj, i) {
   storeStreamStatus(i);
 }
 
-// change box-color at top right of div if streaming or not
-// if streaming animate box to pulsate
 
-// receives data and return obj to use in HTML template
+// receives data and returns obj to use in HTML template
 function getStreamDetails(data, dataType) {
   if (dataType === "channels") {
     return {
       logo: data.logo || "http://hydra-media.cursecdn.com/guildwiki.gamepedia.com/thumb/a/ac/No_image_available.svg/512px-No_image_available.svg.png?version=da06fddcdd06470a79a998b6e7be11fc",
-      name: data.name,
+      name: data.display_name,
       url: data.url,
       views: data.views.toString()
         .split('')
@@ -126,6 +124,9 @@ function storeStreamStatus(i) {
 
 // add active class to selected tab
 $('.tabs ul li').on("click", function (e) {
+  
+  //TODO: If tab os active, skip function and do nothing
+  if($(this).is(".active")){ return; }
 
   $(this).parent().find(".active").removeClass('active');
   $(this).addClass("active");
@@ -136,8 +137,6 @@ $('.tabs ul li').on("click", function (e) {
   container.html("");
   $("#search-bar").prop("placeholder", "Search");
 
-
-  //TODO: If tab os active, skip function and do nothing
 
   // print relevant streams
   if ($(this).text() === "All") {
@@ -159,7 +158,7 @@ $('.tabs ul li').on("click", function (e) {
   }
 });
 
-
+// live search as user inputs data
 $("#search-bar").on("keyup paste", function (e) {
   var active = $(".active");
   if (active.text() === "All") {
@@ -171,6 +170,7 @@ $("#search-bar").on("keyup paste", function (e) {
   }
 });
 
+// serach for user on enter key pressed
 $("#search-bar").on("keydown", function (e) {
 
   if ($(".active").text() === "Add Channel") {
@@ -180,6 +180,14 @@ $("#search-bar").on("keydown", function (e) {
     }
   }
 });
+
+// hides the search icon on focus
+$("#search-bar").on("focus", function (e) {
+  $(".fa-search").css("opacity", "0")
+})
+$("#search-bar").on("blur", function (e) {
+  $(".fa-search").css("opacity", "1")
+})
 
 $("form").on("submit", function (e) {
   e.preventDefault();
@@ -290,8 +298,6 @@ function inArray(val, channel) {
   }
   return false;
 }
-
-
 
 
 // change displayed streams based on streaming info
