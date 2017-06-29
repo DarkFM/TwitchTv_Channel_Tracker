@@ -176,8 +176,8 @@ a.stream-link:first-of-type {
 
 .now-playing,
 .followers,
-.views,
-.bio {
+.viewer-numbers,
+.total-views {
     font-size: 18px;
     font-weight: 700;
 }
@@ -188,37 +188,42 @@ a.stream-link:first-of-type {
 
 /* online indicator */
 .offline::after{
-    content: "";
-    display: block;
+    content: "Offline";
+    display: flex;
     position: absolute;
-    width: 30px;
-    height: 30px;
-    background-color: red;
-    right: -5px;
-    top: -5px;
-    animation: pulse .5s ease-in forwards both;
+    width: 200px;
+    height: 24px;
+    background-color: tomato;
+    transform: rotate(90deg);
+    right: -88px;
+    top: 88px;
+    font-size: 21px;
+    justify-content: center;
 }
 
 .online::after{
-    content: "";
-    display: block;
+    content: "Online";
+    display: flex;
     position: absolute;
-    width: 30px;
-    height: 30px;
+    width: 200px;
+    height: 24px;
     background-color: greenyellow;
-    right: -5px;
-    top: -5px;
-    animation: pulse .5s ease-in forwards both;
+    transform: rotate(90deg);
+    right: -88px;
+    top: 88px;
+    font-size: 21px;
+    justify-content: center;
 }
+
 
 @keyframes pulse{
     0% {
         transform: scaleX(1);
-        transform: scaleY(1);        
+        /*transform: scaleY(1);        */
     }
     100% {
-        transform: scaleX(1.5);
-        transform: scaleY(1.5);
+        transform: scaleX(1.2);
+        /*transform: scaleY(1.5);*/
         
     }
 }
@@ -238,7 +243,7 @@ a.stream-link:first-of-type {
     .now-playing,
     .followers,
     .viewer-numbers,
-    .bio {
+    .total-views {
         font-size: 16px;
     }
 }
@@ -267,7 +272,7 @@ a.stream-link:first-of-type {
     .now-playing,
     .followers,
     .viewer-numbers,
-    .bio {
+    .total-views {
         font-size: 14px;
     }
 }
