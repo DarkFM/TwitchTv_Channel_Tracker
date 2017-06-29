@@ -1,22 +1,14 @@
 var onlineStreams = [];
 var offlineStreams = [];
+
 // on load get ajax from twitch
 $(function () {
 
-  // HTML
-
   var channels = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "LawBreakers", "noobs2ninjas"];
-
-
 
   channels.forEach(function (val, index, arry) {
     getStreams(val, index);
   });
-  // storeStreamStatus();
-
-  console.log(onlineStreams);
-  console.log("========================")
-  console.log(offlineStreams);
 
 });
 
@@ -26,30 +18,28 @@ function getStreams(val, i) {
     dataType: "jsonp",
     mimeType: "Accept: application/vnd.twitchtv.v5+jsonp",
     success: function (data) {
-      var streamInfo = isStreaming(data, "channels");
-      // console.log(streamInfo);
-      var template = printHTMLTemplate_1(streamInfo, i);
+      var streamInfo = getStreamDetails(data, "channels");
+      var template = printBaseChannelDetails(streamInfo, i);
       getStreamsInfo(streamInfo, template, i);
     }
   });
 }
 
 function getStreamsInfo(streamInfo, template, i) {
-  // console.log(streamInfo);
   jQuery.ajax(`https://wind-bow.gomix.me/twitch-api/streams/` + streamInfo.name, {
     method: "GET",
     dataType: "jsonp",
     mimeType: "Accept: application/vnd.twitchtv.v5+jsonp",
     success: function (data) {
-      var obj = isStreaming(data, "streams");
-      printHTMLTemplate_2(template, obj, i);
+      var obj = getStreamDetails(data, "streams");
+      printIfChannelStreaming(template, obj, i);
 
     }
   });
 }
 
 // displays basic info of streamer
-function printHTMLTemplate_1(obj, i) {
+function printBaseChannelDetails(obj, i) {
   var HTMLTemplate = `<a data-count${i}="val" class="stream-link" href="${obj.url}" target="_blank">
                 <div class="stream">
                   <div class="streamer-img">
@@ -68,20 +58,14 @@ function printHTMLTemplate_1(obj, i) {
 }
 
 // recieves streaming JSON and appends to html if channel is streaming
-function printHTMLTemplate_2(template, obj, i) {
+function printIfChannelStreaming(template, obj, i) {
+  
   var live = (!obj) ? "offline" : "online";
+
   if (obj === undefined) {
     // add to displayed items
     $("a[data-count" + i + "]").find("div.stream").addClass(live);
-
-    // var stream = $(template).find(".stream")
-    //                         .addClass(live).find(".viewer-numbers")
-    //                         .html();
-    // // stream = template+stream;
-    // console.log(stream);
-    // offlineStreams.push(stream);
     storeStreamStatus(i);
-
     return;
   }
   var HTMLTemplate = `<p class="now-playing">Now Playing:
@@ -92,7 +76,7 @@ function printHTMLTemplate_2(template, obj, i) {
                       </p>`
   $("a[data-count" + i + "]").find("div.stream").addClass(live);
   $("a[data-count" + i + "]").find(".stream-info").append(HTMLTemplate);
-  // onlineStreams.push(HTMLTemplate);
+  
   storeStreamStatus(i);
 }
 
@@ -100,7 +84,7 @@ function printHTMLTemplate_2(template, obj, i) {
 // if streaming animate box to pulsate
 
 // receives data and return obj to use in HTML template
-function isStreaming(data, dataType) {
+function getStreamDetails(data, dataType) {
   if (dataType === "channels") {
     return {
       logo: data.logo || "http://hydra-media.cursecdn.com/guildwiki.gamepedia.com/thumb/a/ac/No_image_available.svg/512px-No_image_available.svg.png?version=da06fddcdd06470a79a998b6e7be11fc",
@@ -123,9 +107,7 @@ function isStreaming(data, dataType) {
       viewing: data.stream.viewers,
       streaming: data.stream.stream_type
     };
-
   }
-
 }
 
 // stores list of online and offline streams
@@ -133,31 +115,19 @@ function isStreaming(data, dataType) {
 function storeStreamStatus(i) {
 
   var stream = document.querySelector("a[data-count" + i + "]");
-  // console.log(stream.outerHTML)
 
   if ($(stream).find("div.stream").is(".online")) {
-    // console.log(stream.outerHTML)
-
     onlineStreams.push(stream.outerHTML)
   }
 
   if ($(stream).find("div.stream").is(".offline")) {
-    // console.log(stream.outerHTML)
-
     offlineStreams.push(stream.outerHTML)
   }
-
-  // streams.forEach(function(val, i) {
-  //   // if( $(val).is(".online") ){
-  //   //   console.log($(val).find("div.stream").html());
-  //   // }
-  //   // console.log($(val).html())
-  // });
 }
-
 
 // add active class to selected tab
 $('.tabs ul li').on("click", function (e) {
+
   $(this).parent().find(".active").removeClass('active');
   $(this).addClass("active");
   var allStreams = onlineStreams.concat(offlineStreams);
@@ -178,12 +148,66 @@ $('.tabs ul li').on("click", function (e) {
   } else if ($(this).text() === "Offline") {
     offlineStreams.forEach(function (val) {
       container.append(val);
-      // console.log(val);
     });
   }
 
 });
 
+
+$("#search-bar").on("keyup", function (e) {
+  
+  var active = $(".active");
+  if(active.text() === "All"){
+    liveSearch(0, $(this).val());
+  } else if(active.text() === "Online"){
+    liveSearch(1, $(this).val());
+  } else if(active.text() === "Offline"){
+    liveSearch(2, $(this).val());
+  }
+});
+
+
+// insantly updates search result on new search terms
+function liveSearch(tab, query) {
+
+  var allStreams = onlineStreams.concat(offlineStreams);
+  var container = $("section.streams-container");
+  container.html(''); 
+  var re = new RegExp(query);
+  if(tab === 0){
+    // search through all streams array
+    allStreams.forEach(function(val, i) {
+      var item = $(val);
+      // find and compare search string to channel name
+      if( item.find("h4").text().search(re) !== -1){
+        container.append(val);
+      }
+    });
+  } else if(tab === 1){
+    // search through all streams array
+    onlineStreams.forEach(function(val, i) {
+      var item = $(val);
+      // find and compare search string to channel name
+      if( item.find("h4").text().search(re) !== -1){
+        container.append(val);
+      }
+    });
+  } else if(tab === 2){
+    // search through all streams array
+    offlineStreams.forEach(function(val, i) {
+      var item = $(val);
+      // find and compare search string to channel name
+      if( item.find("h4").text().search(re) !== -1){
+        container.append(val);
+      }
+    });
+  }
+}
+
+
+function addNewChannel(prams) {
+  
+}
 // change displayed streams based on streaming info
 
 // search bar should filter results based on search
