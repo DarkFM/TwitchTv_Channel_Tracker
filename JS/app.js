@@ -9,7 +9,9 @@ $(function () {
 
   channels.forEach(function (val, index, arry) {
     getStreams(val, index);
+    // removeChannel(index);
   });
+
 
 });
 
@@ -41,7 +43,8 @@ function getStreamsInfo(streamInfo, template, i) {
 // displays basic info of streamer fron /channels request
 function printBaseChannelDetails(obj, i) {
   var HTMLTemplate = `<a data-count${i}="val" class="stream-link" href="${obj.url}" target="_blank">
-                <div class="stream">
+                <div class="stream ">
+                <button class="rm-btn">Remove</button>
                   <div class="streamer-img">
                       <img src="${obj.logo}" alt="${obj.name}'s Bio Image">
                   </div>
@@ -53,6 +56,7 @@ function printBaseChannelDetails(obj, i) {
   // </div>   
   // </a>`
   $("section.streams-container").append(HTMLTemplate);
+  removeChannel(i);
   return HTMLTemplate;
 
 }
@@ -130,7 +134,9 @@ $('.tabs ul li').on("click", function (e) {
 
   $(this).parent().find(".active").removeClass('active');
   $(this).addClass("active");
-  var allStreams = onlineStreams.concat(offlineStreams);
+  var allStreams = onlineStreams
+                  .concat(offlineStreams)
+                  .sort(() => Math.random() * 2 - 1);
 
   // empty html of container
   var container = $("section.streams-container");
@@ -193,13 +199,48 @@ $("form").on("submit", function (e) {
   e.preventDefault();
 });
 
+function removeChannel(i) {
+
+  var stream = document.querySelector("a[data-count" + i + "]");
+  // var stream = document.querySelectorAll(".stream-link");
+  var element = $(stream);
+  // var element = $(".stream-link");
+
+  element.find("button.rm-btn").on("click", function (e) {
+    e.preventDefault();
+    var name = $(this).parent().find("h4").text();
+
+    // remove the element from array and update array
+    onlineStreams = onlineStreams.filter(function (val, i) {
+      if($(val).find("h4").text() === name){
+        return false;
+      }
+      return true;      
+    });
+
+    offlineStreams = offlineStreams.filter(function (val, i) {
+      if($(val).find("h4").text() === name){            
+        return false;
+      }
+      return true;
+    });
+
+    $(this).parent().remove();
+    // ("remove");
+
+  });
+}
+
+
+
+
 // insantly updates search result on new search terms
 function liveSearch(tab, query) {
 
   var allStreams = onlineStreams.concat(offlineStreams);
   var container = $("section.streams-container");
   container.html('');
-  var re = new RegExp(query);
+  var re = new RegExp(query, "i");
 
   if (tab === 0) {
     allStreams.forEach(function (val, i) {
