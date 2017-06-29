@@ -1,5 +1,6 @@
 var onlineStreams = [];
 var offlineStreams = [];
+var newChannelName = "";
 
 // on dosument ready 
 $(function () {
@@ -174,7 +175,7 @@ $("#search-bar").on("keydown", function (e) {
 
   if ($(".active").text() === "Add Channel") {
     if (e.keyCode === 13) {
-      $(".streams-container").html("");     
+      $(".streams-container").html("");
       addNewChannel($(this).val())
     }
   }
@@ -218,13 +219,12 @@ function liveSearch(tab, query) {
 
 
 
-
+// seraches for new channel and displays it
 function addNewChannel(query) {
   var searchBar = $("#search-bar");
   searchBar.val("");
 
   getUser(query);
-
 
   function getUser(user) {
     jQuery.ajax(`https://wind-bow.gomix.me/twitch-api/users/` + user, {
@@ -242,21 +242,56 @@ function addNewChannel(query) {
           HTMLTemplate = `<a class="stream-link">
               <div class="stream">
                 <div class="streamer-img">
-                    <img src="${JSON.logo || imgPlaceHolder }" alt="${JSON.name}'s Bio Image">
+                    <img src="${JSON.logo || imgPlaceHolder }" alt="${JSON.display_name}'s Logo">
                 </div>
                 <div class="stream-info">
-                    <h4>${JSON.name}</h4>
+                    <h4>${JSON.display_name}</h4>
                     <button class="add-btn">Add</button>`
-                    
+          newChannelName = JSON.name;
           $(".streams-container").append(HTMLTemplate);
+          attachEventToButton();
         }
-
       }
     });
   }
-
-
 }
+
+function attachEventToButton() {
+  $(".add-btn").on("click", function (e) {
+    var container = $(".streams-container")
+    container.html(" ");
+    var allStreams = onlineStreams.concat(offlineStreams);
+
+    var check = false;
+
+    for (var val of allStreams) {
+      check = inArray(val, newChannelName);
+      if (check) {
+        break;
+      }
+    }
+    
+    if (check) {
+      container.append(`<h1 style="margin-top: 20px; text-align: center;"> Channel Already in Collection`);
+      return;
+    }
+
+    getStreams(newChannelName);
+    $(".streams-container").append(`<h1 style="margin-top: 20px; text-align: center;"> New Channel Added`);
+
+  });
+}
+
+function inArray(val, channel) {
+  var item = $(val).find("h4").text();
+
+  if (item === channel) {
+    return true;
+  }
+  return false;
+}
+
+
 
 
 // change displayed streams based on streaming info
