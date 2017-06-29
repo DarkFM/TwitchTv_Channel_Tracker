@@ -215,6 +215,14 @@ a.stream-link:first-of-type {
     justify-content: center;
 }
 
+.add-btn{
+    border: none;
+    padding: 20px;
+    font-size: 30px;
+    /*text-align: center;*/
+    align-self: center;
+}
+
 
 @keyframes pulse{
     0% {

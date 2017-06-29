@@ -1,7 +1,7 @@
 var onlineStreams = [];
 var offlineStreams = [];
 
-// on load get ajax from twitch
+// on dosument ready 
 $(function () {
 
   var channels = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "LawBreakers", "noobs2ninjas"];
@@ -32,8 +32,7 @@ function getStreamsInfo(streamInfo, template, i) {
     mimeType: "Accept: application/vnd.twitchtv.v5+jsonp",
     success: function (data) {
       var obj = getStreamDetails(data, "streams");
-      printIfChannelStreaming(template, obj, i);
-
+      displayWhenStreaming(template, obj, i);
     }
   });
 }
@@ -58,15 +57,15 @@ function printBaseChannelDetails(obj, i) {
 }
 
 // recieves streaming JSON and appends to html if channel is streaming
-function printIfChannelStreaming(template, obj, i) {
-  
+function displayWhenStreaming(template, obj, i) {
+
   var live = (!obj) ? "offline" : "online";
 
   if (obj === undefined) {
     // add to displayed items
     $("a[data-count" + i + "]").find("div.stream").addClass(live);
     storeStreamStatus(i);
-    return;
+    return undefined;
   }
   var HTMLTemplate = `<p class="now-playing">Now Playing:
                          <span>${obj.game || live}</span>
@@ -76,7 +75,7 @@ function printIfChannelStreaming(template, obj, i) {
                       </p>`
   $("a[data-count" + i + "]").find("div.stream").addClass(live);
   $("a[data-count" + i + "]").find(".stream-info").append(HTMLTemplate);
-  
+
   storeStreamStatus(i);
 }
 
@@ -113,7 +112,6 @@ function getStreamDetails(data, dataType) {
 // stores list of online and offline streams
 // called at every insersion into DOM
 function storeStreamStatus(i) {
-
   var stream = document.querySelector("a[data-count" + i + "]");
 
   if ($(stream).find("div.stream").is(".online")) {
@@ -135,6 +133,10 @@ $('.tabs ul li').on("click", function (e) {
   // empty html of container
   var container = $("section.streams-container");
   container.html("");
+  $("#search-bar").prop("placeholder", "Search");
+
+
+  //TODO: If tab os active, skip function and do nothing
 
   // print relevant streams
   if ($(this).text() === "All") {
@@ -149,65 +151,114 @@ $('.tabs ul li').on("click", function (e) {
     offlineStreams.forEach(function (val) {
       container.append(val);
     });
+  } else {
+    var searchBar = $("#search-bar");
+    searchBar.val("");
+    searchBar.prop("placeholder", "Add New Channel");
   }
-
 });
 
 
-$("#search-bar").on("keyup", function (e) {
-  
+$("#search-bar").on("keyup paste", function (e) {
   var active = $(".active");
-  if(active.text() === "All"){
+  if (active.text() === "All") {
     liveSearch(0, $(this).val());
-  } else if(active.text() === "Online"){
+  } else if (active.text() === "Online") {
     liveSearch(1, $(this).val());
-  } else if(active.text() === "Offline"){
+  } else if (active.text() === "Offline") {
     liveSearch(2, $(this).val());
   }
 });
 
+$("#search-bar").on("keydown", function (e) {
+
+  if ($(".active").text() === "Add Channel") {
+    if (e.keyCode === 13) {
+      $(".streams-container").html("");     
+      addNewChannel($(this).val())
+    }
+  }
+});
+
+$("form").on("submit", function (e) {
+  e.preventDefault();
+});
 
 // insantly updates search result on new search terms
 function liveSearch(tab, query) {
 
   var allStreams = onlineStreams.concat(offlineStreams);
   var container = $("section.streams-container");
-  container.html(''); 
+  container.html('');
   var re = new RegExp(query);
-  if(tab === 0){
-    // search through all streams array
-    allStreams.forEach(function(val, i) {
-      var item = $(val);
-      // find and compare search string to channel name
-      if( item.find("h4").text().search(re) !== -1){
-        container.append(val);
-      }
+
+  if (tab === 0) {
+    allStreams.forEach(function (val, i) {
+      findAndAppend(val);
     });
-  } else if(tab === 1){
-    // search through all streams array
-    onlineStreams.forEach(function(val, i) {
-      var item = $(val);
-      // find and compare search string to channel name
-      if( item.find("h4").text().search(re) !== -1){
-        container.append(val);
-      }
+  } else if (tab === 1) {
+    onlineStreams.forEach(function (val, i) {
+      findAndAppend(val);
+
     });
-  } else if(tab === 2){
-    // search through all streams array
-    offlineStreams.forEach(function(val, i) {
-      var item = $(val);
-      // find and compare search string to channel name
-      if( item.find("h4").text().search(re) !== -1){
-        container.append(val);
-      }
+  } else if (tab === 2) {
+    offlineStreams.forEach(function (val, i) {
+      findAndAppend(val);
     });
+  }
+
+  function findAndAppend(val) {
+    var item = $(val);
+    if (item.find("h4").text().search(re) !== -1) {
+      container.append(val);
+    }
   }
 }
 
 
-function addNewChannel(prams) {
-  
+
+
+
+function addNewChannel(query) {
+  var searchBar = $("#search-bar");
+  searchBar.val("");
+
+  getUser(query);
+
+
+  function getUser(user) {
+    jQuery.ajax(`https://wind-bow.gomix.me/twitch-api/users/` + user, {
+      method: "GET",
+      dataType: "jsonp",
+      mimeType: "Accept: application/vnd.twitchtv.v5+jsonp",
+      success: function (JSON) {
+
+        var HTMLTemplate;
+        var imgPlaceHolder = `http://hydra-media.cursecdn.com/guildwiki.gamepedia.com/thumb/a/ac/No_image_available.svg/512px-No_image_available.svg.png?version=da06fddcdd06470a79a998b6e7be11fc`;
+
+        if (JSON.status === 404) {
+          $(".streams-container").html(JSON.message);
+        } else {
+          HTMLTemplate = `<a class="stream-link">
+              <div class="stream">
+                <div class="streamer-img">
+                    <img src="${JSON.logo || imgPlaceHolder }" alt="${JSON.name}'s Bio Image">
+                </div>
+                <div class="stream-info">
+                    <h4>${JSON.name}</h4>
+                    <button class="add-btn">Add</button>`
+                    
+          $(".streams-container").append(HTMLTemplate);
+        }
+
+      }
+    });
+  }
+
+
 }
+
+
 // change displayed streams based on streaming info
 
 // search bar should filter results based on search
