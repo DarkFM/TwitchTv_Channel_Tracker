@@ -5,7 +5,7 @@ var newChannelName = "";
 // on dosument ready 
 $(function () {
 
-  var channels = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "LawBreakers", "noobs2ninjas"];
+  var channels = ["ESL_SC2", "OgamingSC2", "cretetion", "monstercat" , "freecodecamp", "shoutfactorytv", "habathcx", "RobotCaleb", "LawBreakers", "noobs2ninjas", "streamerhouse"];
 
   channels.forEach(function (val, index, arry) {
     getStreams(val, index);
@@ -236,7 +236,7 @@ function addNewChannel(query) {
         var HTMLTemplate;
         var imgPlaceHolder = `http://hydra-media.cursecdn.com/guildwiki.gamepedia.com/thumb/a/ac/No_image_available.svg/512px-No_image_available.svg.png?version=da06fddcdd06470a79a998b6e7be11fc`;
 
-        if (JSON.status === 404) {
+        if (JSON.status === 404 || JSON.status === 422) {
           $(".streams-container").html(JSON.message);
         } else {
           HTMLTemplate = `<a class="stream-link">
