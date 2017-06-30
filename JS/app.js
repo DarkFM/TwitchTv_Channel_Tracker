@@ -9,7 +9,6 @@ $(function () {
 
   channels.forEach(function (val, index, arry) {
     getStreams(val, index);
-    // attachRemoveChannelBtnEvent(index);
   });
 
 
@@ -143,7 +142,6 @@ function storeStreamStatus(i) {
 // add active class to selected tab
 $('.tabs ul li').on("click", function (e) {
 
-  // console.log(onlineStreams)
   //TODO: If tab os active, skip function and do nothing
   if ($(this).is(".active")) {
     return;
@@ -165,26 +163,23 @@ $('.tabs ul li').on("click", function (e) {
   if ($(this).text() === "All") {
     allStreams.forEach(function (val, i) {
       container.append(val);
-      // attachRemoveChannelBtnEvent();
     });
   } else if ($(this).text() === "Online") {
     onlineStreams.forEach(function (val, i) {
       container.append(val);
-      // attachRemoveChannelBtnEvent();
-
     });
   } else if ($(this).text() === "Offline") {
     offlineStreams.forEach(function (val, i) {
       container.append(val);
-      // attachRemoveChannelBtnEvent();
-
     });
   } else {
     var searchBar = $("#search-bar");
     searchBar.val("");
     searchBar.prop("placeholder", "Add New Channel");
   }
-      attachRemoveChannelBtnEvent();
+
+  // attach event after populating document
+    attachRemoveChannelBtnEvent();
   
 });
 
@@ -223,16 +218,12 @@ $("form").on("submit", function (e) {
   e.preventDefault();
 });
 
+
+
 function attachRemoveChannelBtnEvent() {
 
-  // var stream = document.querySelector("a[data-count" + i + "]");
-  // var element = $(stream);
   element = $(".stream-link");
-    // console.log(element);
-  
-
   element.each(function (i, val) {
-    // console.log(val);
 
     $(val).find("button.rm-btn").on("click", function (e) {
       e.preventDefault();
@@ -278,20 +269,18 @@ function liveSearch(tab, query) {
   if (tab === 0) {
     allStreams.forEach(function (val, i) {
       findAndAppend(val);
-      // attachRemoveChannelBtnEvent(i);
     });
   } else if (tab === 1) {
     onlineStreams.forEach(function (val, i) {
       findAndAppend(val);
-      // attachRemoveChannelBtnEvent(i);
 
     });
   } else if (tab === 2) {
     offlineStreams.forEach(function (val, i) {
       findAndAppend(val);
-      // attachRemoveChannelBtnEvent(i);
     });
   }
+  // attache event after populating document
     attachRemoveChannelBtnEvent();
   
 
