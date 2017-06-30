@@ -114,6 +114,7 @@ Streamer style
     cursor: pointer;
     width: 97%;
     margin: 0 auto;
+    overflow:hidden;
 }
 
 section.streams-container {

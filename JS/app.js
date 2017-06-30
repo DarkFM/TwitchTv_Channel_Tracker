@@ -5,28 +5,38 @@ var newChannelName = "";
 // on dosument ready 
 $(function () {
 
-  var channels = ["ESL_SC2", "OgamingSC2", "cretetion", "monstercat" , "freecodecamp", "shoutfactorytv", "habathcx", "RobotCaleb", "LawBreakers", "noobs2ninjas", "streamerhouse"];
+  var channels = ["ESL_SC2", "OgamingSC2", "cretetion", "monstercat", "freecodecamp", "shoutfactorytv", "habathcx", "RobotCaleb", "LawBreakers", "noobs2ninjas", "streamerhouse"];
 
   channels.forEach(function (val, index, arry) {
     getStreams(val, index);
-    // removeChannel(index);
+    // attachRemoveChannelBtnEvent(index);
   });
 
 
 });
 
-function getStreams(val, i) {
-  jQuery.ajax(`https://wind-bow.gomix.me/twitch-api/channels/` + val, {
-    method: "GET",
-    dataType: "jsonp",
-    mimeType: "Accept: application/vnd.twitchtv.v5+jsonp",
-    success: function (data) {
-      var streamInfo = getStreamDetails(data, "channels");
-      var template = printBaseChannelDetails(streamInfo, i);
-      getStreamsInfo(streamInfo, template, i);
+var getStreams = (function () {
+  var count = 11;
+
+  return function (val, i) {
+    if (!i) {
+      ++count;
     }
-  });
-}
+
+    jQuery.ajax(`https://wind-bow.gomix.me/twitch-api/channels/` + val, {
+      method: "GET",
+      dataType: "jsonp",
+      mimeType: "Accept: application/vnd.twitchtv.v5+jsonp",
+      success: function (data) {
+        var streamInfo = getStreamDetails(data, "channels");
+        var template = printBaseChannelDetails(streamInfo, (i || count));
+        getStreamsInfo(streamInfo, template, (i || count));
+      }
+    });
+  }
+})();
+
+
 
 function getStreamsInfo(streamInfo, template, i) {
   jQuery.ajax(`https://wind-bow.gomix.me/twitch-api/streams/` + streamInfo.name, {
@@ -56,7 +66,7 @@ function printBaseChannelDetails(obj, i) {
   // </div>   
   // </a>`
   $("section.streams-container").append(HTMLTemplate);
-  removeChannel(i);
+  // attachRemoveChannelBtnEvent();
   return HTMLTemplate;
 
 }
@@ -70,6 +80,8 @@ function displayWhenStreaming(template, obj, i) {
     // add to displayed items
     $("a[data-count" + i + "]").find("div.stream").addClass(live);
     storeStreamStatus(i);
+    attachRemoveChannelBtnEvent();
+    
     return undefined;
   }
   var HTMLTemplate = `<p class="now-playing">Now Playing:
@@ -82,6 +94,8 @@ function displayWhenStreaming(template, obj, i) {
   $("a[data-count" + i + "]").find(".stream-info").append(HTMLTemplate);
 
   storeStreamStatus(i);
+  attachRemoveChannelBtnEvent();
+  
 }
 
 
@@ -128,15 +142,18 @@ function storeStreamStatus(i) {
 
 // add active class to selected tab
 $('.tabs ul li').on("click", function (e) {
-  
+
+  // console.log(onlineStreams)
   //TODO: If tab os active, skip function and do nothing
-  if($(this).is(".active")){ return; }
+  if ($(this).is(".active")) {
+    return;
+  }
 
   $(this).parent().find(".active").removeClass('active');
   $(this).addClass("active");
   var allStreams = onlineStreams
-                  .concat(offlineStreams)
-                  .sort(() => Math.random() * 2 - 1);
+    .concat(offlineStreams)
+    .sort(() => Math.random() * 2 - 1);
 
   // empty html of container
   var container = $("section.streams-container");
@@ -146,22 +163,29 @@ $('.tabs ul li').on("click", function (e) {
 
   // print relevant streams
   if ($(this).text() === "All") {
-    allStreams.forEach(function (val) {
+    allStreams.forEach(function (val, i) {
       container.append(val);
+      // attachRemoveChannelBtnEvent();
     });
   } else if ($(this).text() === "Online") {
-    onlineStreams.forEach(function (val) {
+    onlineStreams.forEach(function (val, i) {
       container.append(val);
+      // attachRemoveChannelBtnEvent();
+
     });
   } else if ($(this).text() === "Offline") {
-    offlineStreams.forEach(function (val) {
+    offlineStreams.forEach(function (val, i) {
       container.append(val);
+      // attachRemoveChannelBtnEvent();
+
     });
   } else {
     var searchBar = $("#search-bar");
     searchBar.val("");
     searchBar.prop("placeholder", "Add New Channel");
   }
+      attachRemoveChannelBtnEvent();
+  
 });
 
 // live search as user inputs data
@@ -199,36 +223,45 @@ $("form").on("submit", function (e) {
   e.preventDefault();
 });
 
-function removeChannel(i) {
+function attachRemoveChannelBtnEvent() {
 
-  var stream = document.querySelector("a[data-count" + i + "]");
-  // var stream = document.querySelectorAll(".stream-link");
-  var element = $(stream);
-  // var element = $(".stream-link");
+  // var stream = document.querySelector("a[data-count" + i + "]");
+  // var element = $(stream);
+  element = $(".stream-link");
+    // console.log(element);
+  
 
-  element.find("button.rm-btn").on("click", function (e) {
-    e.preventDefault();
-    var name = $(this).parent().find("h4").text();
+  element.each(function (i, val) {
+    // console.log(val);
 
-    // remove the element from array and update array
-    onlineStreams = onlineStreams.filter(function (val, i) {
-      if($(val).find("h4").text() === name){
-        return false;
-      }
-      return true;      
+    $(val).find("button.rm-btn").on("click", function (e) {
+      e.preventDefault();
+      var name = $(this).parent().find("h4").text();
+
+      // remove the element from array and update array
+      onlineStreams = onlineStreams.filter(function (val, i) {
+
+        if ($(val).find("h4").text() === name) {
+          return false;
+        } else {
+          return true;
+        }
+      });
+
+      offlineStreams = offlineStreams.filter(function (val, i) {
+        if ($(val).find("h4").text() === name) {
+          return false;
+        } else {
+          return true;
+        }
+      });
+
+      $(this).parent().remove();
+
     });
-
-    offlineStreams = offlineStreams.filter(function (val, i) {
-      if($(val).find("h4").text() === name){            
-        return false;
-      }
-      return true;
-    });
-
-    $(this).parent().remove();
-    // ("remove");
 
   });
+
 }
 
 
@@ -245,17 +278,22 @@ function liveSearch(tab, query) {
   if (tab === 0) {
     allStreams.forEach(function (val, i) {
       findAndAppend(val);
+      // attachRemoveChannelBtnEvent(i);
     });
   } else if (tab === 1) {
     onlineStreams.forEach(function (val, i) {
       findAndAppend(val);
+      // attachRemoveChannelBtnEvent(i);
 
     });
   } else if (tab === 2) {
     offlineStreams.forEach(function (val, i) {
       findAndAppend(val);
+      // attachRemoveChannelBtnEvent(i);
     });
   }
+    attachRemoveChannelBtnEvent();
+  
 
   function findAndAppend(val) {
     var item = $(val);
@@ -296,7 +334,7 @@ function addNewChannel(query) {
                 <div class="stream-info">
                     <h4>${JSON.display_name}</h4>
                     <button class="add-btn">Add</button>`
-          newChannelName = JSON.name;
+          newChannelName = JSON.display_name;
           $(".streams-container").append(HTMLTemplate);
           attachEventToButton();
         }
@@ -319,7 +357,7 @@ function attachEventToButton() {
         break;
       }
     }
-    
+
     if (check) {
       container.append(`<h1 style="margin-top: 20px; text-align: center;"> Channel Already in Collection`);
       return;
@@ -339,20 +377,3 @@ function inArray(val, channel) {
   }
   return false;
 }
-
-
-// change displayed streams based on streaming info
-
-// search bar should filter results based on search
-
-// results should be filtered based on tab user is currently on
-
-// add channel tab-> uses different ajax request to search for user
-
-// add channel tab-> display serach results in stream container
-// show name and image of streamer, with viewer info and button to add
-// adding new streamers should display a message indicating success
-
-
-// switching tabs should reset view and display info for related tab
-// should also clear out search bar
